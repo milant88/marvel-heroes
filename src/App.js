@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
+import HeroItem from './components/HeroItem';
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
             searchValue: '',
-            heroes: null
+            heroes: null,
+            activePage: 1
         };
 
         this._allHeroes = this._allHeroes.bind(this);
@@ -33,15 +35,25 @@ class App extends Component {
                   value={this.state.searchValue}
                   className="search-bar"/>
           </p>
-          {this.state.heroes ?
-              this.state.heroes.map(hero =>
-                  <div key={hero.id} className="hero">{hero.name}</div>
-              )
-              : null}
-
+          <div className="hero-container">
+              {this.state.heroes ?
+                  this.state.heroes.map(hero =>
+                      <HeroItem
+                          key={hero.id}
+                          name={hero.name}
+                          thumbnail={hero.thumbnail.path}
+                          extension={hero.thumbnail.extension}
+                      />
+                  )
+                  : null}
+          </div>
       </div>
     );
   }
+    handlePageChange(pageNumber) {
+        console.log(`active page is ${pageNumber}`);
+        this.setState({activePage: pageNumber});
+    }
 
     _onSearch(event) {
         this.setState({searchValue: event.target.value});
