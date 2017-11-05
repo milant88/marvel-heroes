@@ -1,4 +1,8 @@
 $container-width: 1200px;
+$theme-color: #222;
+body {
+  background-color: azure;
+}
 
 .App {
   text-align: center;
@@ -9,7 +13,7 @@ $container-width: 1200px;
 }
 
 .App-header {
-  background-color: #222;
+  background-color: $theme-color;
   height: 150px;
   padding: 20px;
   color: white;
@@ -21,6 +25,17 @@ $container-width: 1200px;
 
 .App-intro {
   font-size: large;
+}
+
+.search-bar {
+  box-sizing: border-box;
+  max-width: $container-width;
+  width: 80%;
+  background-color: $theme-color;
+  height: 40px;
+  color: white;
+  font-size: 1.2rem;
+  padding: 10px;
 }
 
 .hero-container {
