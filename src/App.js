@@ -10,14 +10,16 @@ class App extends Component {
         this.state = {
             searchValue: '',
             heroes: null,
-            activePage: 1
+            activePage: 1,
+            bookmarkedHeroes: []
         };
 
         this._allHeroes = this._allHeroes.bind(this);
+        this._initializeHeroes = this._initializeHeroes.bind(this);
     }
 
     componentWillMount() {
-        this._allHeroes();
+        this._initializeHeroes();
     }
 
   render() {
@@ -43,6 +45,8 @@ class App extends Component {
                           name={hero.name}
                           thumbnail={hero.thumbnail.path}
                           extension={hero.thumbnail.extension}
+                          alt="missing picture"
+                          onClick={() => this._bookmarkHero(hero)}
                       />
                   )
                   : null}
@@ -50,9 +54,10 @@ class App extends Component {
       </div>
     );
   }
-    handlePageChange(pageNumber) {
-        console.log(`active page is ${pageNumber}`);
-        this.setState({activePage: pageNumber});
+
+    _bookmarkHero(hero) {
+        console.log('hero clicked: ', hero);
+        localStorage.setItem(`${hero.id}`, JSON.stringify(hero));
     }
 
     _onSearch(event) {
@@ -63,14 +68,19 @@ class App extends Component {
 
     }
 
-    _allHeroes() {
-        if(this.state.searchValue === '') {
-            axios.get(`https://gateway.marvel.com:443/v1/public/characters?limit=100&apikey=bdd06d316995e8cbd513db2029205388`).then(result => {
-                this.setState({
-                    heroes: result.data.data.results
-                });
+    _initializeHeroes() {
+        axios.get(`https://gateway.marvel.com:443/v1/public/characters?limit=100&apikey=bdd06d316995e8cbd513db2029205388`).then(result => {
+            this.setState({
+                heroes: result.data.data.results
+            });
 
-            }).catch(error => console.log('Error fetching and parsing data', error));
+        }).catch(error => console.log('Error fetching and parsing data', error));
+    }
+
+    _allHeroes() {
+
+        if(this.state.searchValue === '') {
+            this._initializeHeroes();
         } else if(this.state.searchValue) {
             axios.get(`https://gateway.marvel.com:443/v1/public/characters?nameStartsWith=${this.state.searchValue}&limit=100&apikey=bdd06d316995e8cbd513db2029205388`).then(result => {
                 this.setState({
