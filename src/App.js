@@ -7,7 +7,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchValue: false,
+            searchValue: '',
             heroes: null
         };
 
@@ -30,7 +30,7 @@ class App extends Component {
                   onChange={this._onSearch.bind(this)}
                   autoFocus={true}
                   placeholder="Search here for your favorite characters"
-                  value={this.props.searchValue}
+                  value={this.state.searchValue}
                   className="search-bar"/>
           </p>
           {this.state.heroes ?
@@ -44,18 +44,29 @@ class App extends Component {
   }
 
     _onSearch(event) {
-        this.setState({
-            searchValue: event.target.value
-        });
+        this.setState({searchValue: event.target.value});
+        setTimeout(function() {
+            this._allHeroes();
+        }.bind(this), 1000);
+
     }
 
     _allHeroes() {
-        axios.get(`https://gateway.marvel.com:443/v1/public/characters?limit=100&apikey=bdd06d316995e8cbd513db2029205388`).then(result => {
-            this.setState({
-                heroes: result.data.data.results
-            });
+        if(this.state.searchValue === '') {
+            axios.get(`https://gateway.marvel.com:443/v1/public/characters?limit=100&apikey=bdd06d316995e8cbd513db2029205388`).then(result => {
+                this.setState({
+                    heroes: result.data.data.results
+                });
 
-        }).catch(error => console.log('Error fetching and parsing data', error));
+            }).catch(error => console.log('Error fetching and parsing data', error));
+        } else if(this.state.searchValue) {
+            axios.get(`https://gateway.marvel.com:443/v1/public/characters?nameStartsWith=${this.state.searchValue}&limit=100&apikey=bdd06d316995e8cbd513db2029205388`).then(result => {
+                this.setState({
+                    heroes: result.data.data.results
+                });
+
+            }).catch(error => console.log('Error fetching and parsing data', error));
+        }
     };
 
 }
