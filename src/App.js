@@ -1,8 +1,23 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import axios from 'axios';
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchValue: false,
+            heroes: null
+        };
+
+        this._allHeroes = this._allHeroes.bind(this);
+    }
+
+    componentWillMount() {
+        this._allHeroes();
+    }
+
   render() {
     return (
       <div className="App">
@@ -10,12 +25,39 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to Marvel Heroes</h1>
         </header>
-        <p className="App-intro">
-          To get started, search and bookmark your favorite characters!
-        </p>
+          <p className="App-intro">
+              <input
+                  onChange={this._onSearch.bind(this)}
+                  autoFocus={true}
+                  placeholder="Search here for your favorite characters"
+                  value={this.props.searchValue}
+                  className="search-bar"/>
+          </p>
+          {this.state.heroes ?
+              this.state.heroes.map(hero =>
+                  <div key={hero.id} className="hero">{hero.name}</div>
+              )
+              : null}
+
       </div>
     );
   }
+
+    _onSearch(event) {
+        this.setState({
+            searchValue: event.target.value
+        });
+    }
+
+    _allHeroes() {
+        axios.get(`https://gateway.marvel.com:443/v1/public/characters?limit=100&apikey=bdd06d316995e8cbd513db2029205388`).then(result => {
+            this.setState({
+                heroes: result.data.data.results
+            });
+
+        }).catch(error => console.log('Error fetching and parsing data', error));
+    };
+
 }
 
 export default App;
